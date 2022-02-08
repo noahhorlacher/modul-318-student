@@ -1,4 +1,6 @@
-﻿namespace SwissTransport.Core
+﻿using System.Reflection.Metadata;
+
+namespace SwissTransport.Core
 {
     using System;
     using System.Net.Http;
@@ -20,6 +22,14 @@
             }
 
             var uri = new Uri($"{WebApiHost}locations?query={query}");
+            return this.GetObject<Stations>(uri);
+        }
+        public Stations GetStationsAutoComplete(string query, int limit=4) {
+            if (string.IsNullOrEmpty(query)) {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var uri = new Uri($"{WebApiHost}locations?query={query}&limit={limit}");
             return this.GetObject<Stations>(uri);
         }
 
@@ -52,6 +62,23 @@
             }
 
             var uri = new Uri($"{WebApiHost}connections?from={fromStation}&to={toStation}");
+            return this.GetObject<Connections>(uri);
+        }
+
+        public Connections GetConnections(string fromStation, string toStation, DateTime date) {
+            if (string.IsNullOrEmpty(fromStation)) {
+                throw new ArgumentNullException(nameof(fromStation));
+            }
+
+            if (string.IsNullOrEmpty(toStation)) {
+                throw new ArgumentNullException(nameof(toStation));
+            }
+
+            if (date == null) {
+                throw new ArgumentNullException(nameof(date));
+            }
+
+            var uri = new Uri($"{WebApiHost}connections?from={fromStation}&to={toStation}&date={date.ToString("yyyy-MM-dd")}");
             return this.GetObject<Connections>(uri);
         }
 

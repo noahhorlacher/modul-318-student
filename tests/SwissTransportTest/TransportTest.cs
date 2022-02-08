@@ -1,4 +1,6 @@
-﻿namespace SwissTransport
+﻿using System;
+
+namespace SwissTransport
 {
     using FluentAssertions;
     using SwissTransport.Core;
@@ -9,31 +11,34 @@
     {
         private readonly ITransport testee;
 
-        public TransportTest()
-        {
+        public TransportTest(){
             this.testee = new Transport();
         }
 
         [Fact]
-        public void Locations()
-        {
+        public void Locations(){
             Stations stations = this.testee.GetStations("Sursee,");
 
             stations.StationList.Should().HaveCount(10);
         }
 
         [Fact]
-        public void StationBoard()
-        {
+        public void StationBoard(){
             StationBoardRoot stationBoard = this.testee.GetStationBoard("Sursee", "8502007");
 
             stationBoard.Should().NotBeNull();
         }
 
         [Fact]
-        public void Connections()
-        {
+        public void Connections(){
             Connections connections = this.testee.GetConnections("Sursee", "Luzern");
+
+            connections.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void DateConnections() {
+            Connections connections = this.testee.GetConnections("Sursee", "Luzern", DateTime.Today);
 
             connections.Should().NotBeNull();
         }

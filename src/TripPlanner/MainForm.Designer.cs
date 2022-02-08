@@ -30,11 +30,8 @@
         {
             this.connectionTitleLabel = new System.Windows.Forms.Label();
             this.fromLabel = new System.Windows.Forms.Label();
-            this.fromTextBox = new System.Windows.Forms.TextBox();
-            this.toTextBox = new System.Windows.Forms.TextBox();
             this.toLabel = new System.Windows.Forms.Label();
             this.searchButton = new System.Windows.Forms.Button();
-            this.connectionResultListBox = new System.Windows.Forms.ListBox();
             this.stationSearchButton = new System.Windows.Forms.Button();
             this.stationTextBox = new System.Windows.Forms.TextBox();
             this.stationLabel = new System.Windows.Forms.Label();
@@ -44,13 +41,20 @@
             this.Id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Station = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.timetableDataGridView = new System.Windows.Forms.DataGridView();
-            this.Operator = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Departure = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Richtung = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Number = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Category = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Von = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Nummer = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.connectionResultDataGridView = new System.Windows.Forms.DataGridView();
+            this.Abfahrt = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Ankunft = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Dauer = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.fromComboBox = new System.Windows.Forms.ComboBox();
+            this.toComboBox = new System.Windows.Forms.ComboBox();
+            this.connectionDatePicker = new System.Windows.Forms.DateTimePicker();
+            this.connectionDatePickerLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.stationsDataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.timetableDataGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.connectionResultDataGridView)).BeginInit();
             this.SuspendLayout();
             // 
             // connectionTitleLabel
@@ -72,22 +76,6 @@
             this.fromLabel.TabIndex = 1;
             this.fromLabel.Text = "Von";
             // 
-            // fromTextBox
-            // 
-            this.fromTextBox.Location = new System.Drawing.Point(848, 87);
-            this.fromTextBox.Name = "fromTextBox";
-            this.fromTextBox.PlaceholderText = "Startstation";
-            this.fromTextBox.Size = new System.Drawing.Size(389, 27);
-            this.fromTextBox.TabIndex = 5;
-            // 
-            // toTextBox
-            // 
-            this.toTextBox.Location = new System.Drawing.Point(848, 150);
-            this.toTextBox.Name = "toTextBox";
-            this.toTextBox.PlaceholderText = "Zielstation";
-            this.toTextBox.Size = new System.Drawing.Size(389, 27);
-            this.toTextBox.TabIndex = 6;
-            // 
             // toLabel
             // 
             this.toLabel.AutoSize = true;
@@ -99,22 +87,13 @@
             // 
             // searchButton
             // 
-            this.searchButton.Location = new System.Drawing.Point(1143, 183);
+            this.searchButton.Location = new System.Drawing.Point(1221, 211);
             this.searchButton.Name = "searchButton";
             this.searchButton.Size = new System.Drawing.Size(94, 31);
-            this.searchButton.TabIndex = 7;
+            this.searchButton.TabIndex = 8;
             this.searchButton.Text = "Suchen";
             this.searchButton.UseVisualStyleBackColor = true;
             this.searchButton.Click += new System.EventHandler(this.searchButton_Click);
-            // 
-            // connectionResultListBox
-            // 
-            this.connectionResultListBox.FormattingEnabled = true;
-            this.connectionResultListBox.ItemHeight = 20;
-            this.connectionResultListBox.Location = new System.Drawing.Point(848, 231);
-            this.connectionResultListBox.Name = "connectionResultListBox";
-            this.connectionResultListBox.Size = new System.Drawing.Size(389, 284);
-            this.connectionResultListBox.TabIndex = 8;
             // 
             // stationSearchButton
             // 
@@ -168,6 +147,8 @@
             this.stationsDataGridView.AllowUserToAddRows = false;
             this.stationsDataGridView.AllowUserToDeleteRows = false;
             this.stationsDataGridView.AllowUserToResizeRows = false;
+            this.stationsDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.stationsDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.stationsDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Id,
@@ -180,8 +161,8 @@
             this.stationsDataGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.stationsDataGridView.RowTemplate.Height = 29;
             this.stationsDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.stationsDataGridView.Size = new System.Drawing.Size(389, 358);
-            this.stationsDataGridView.TabIndex = 16;
+            this.stationsDataGridView.Size = new System.Drawing.Size(389, 464);
+            this.stationsDataGridView.TabIndex = 3;
             this.stationsDataGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.stationsDataGridView_CellMouseClick);
             // 
             // Id
@@ -206,13 +187,14 @@
             this.timetableDataGridView.AllowUserToAddRows = false;
             this.timetableDataGridView.AllowUserToDeleteRows = false;
             this.timetableDataGridView.AllowUserToResizeRows = false;
+            this.timetableDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.timetableDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.timetableDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.timetableDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Operator,
+            this.Departure,
             this.Richtung,
-            this.Number,
-            this.Category,
-            this.Von});
+            this.Nummer});
             this.timetableDataGridView.Location = new System.Drawing.Point(431, 87);
             this.timetableDataGridView.MultiSelect = false;
             this.timetableDataGridView.Name = "timetableDataGridView";
@@ -221,17 +203,16 @@
             this.timetableDataGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.timetableDataGridView.RowTemplate.Height = 29;
             this.timetableDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.timetableDataGridView.Size = new System.Drawing.Size(389, 428);
-            this.timetableDataGridView.TabIndex = 17;
+            this.timetableDataGridView.Size = new System.Drawing.Size(387, 534);
+            this.timetableDataGridView.TabIndex = 4;
             // 
-            // Operator
+            // Departure
             // 
-            this.Operator.HeaderText = "Operator";
-            this.Operator.MinimumWidth = 6;
-            this.Operator.Name = "Operator";
-            this.Operator.ReadOnly = true;
-            this.Operator.Visible = false;
-            this.Operator.Width = 125;
+            this.Departure.HeaderText = "Abfahrt";
+            this.Departure.MinimumWidth = 6;
+            this.Departure.Name = "Departure";
+            this.Departure.ReadOnly = true;
+            this.Departure.Width = 88;
             // 
             // Richtung
             // 
@@ -239,37 +220,117 @@
             this.Richtung.MinimumWidth = 6;
             this.Richtung.Name = "Richtung";
             this.Richtung.ReadOnly = true;
-            this.Richtung.Width = 125;
+            this.Richtung.Width = 96;
             // 
-            // Number
+            // Nummer
             // 
-            this.Number.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Number.HeaderText = "Number";
-            this.Number.MinimumWidth = 6;
-            this.Number.Name = "Number";
-            this.Number.ReadOnly = true;
+            this.Nummer.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Nummer.HeaderText = "Nummer";
+            this.Nummer.MinimumWidth = 6;
+            this.Nummer.Name = "Nummer";
+            this.Nummer.ReadOnly = true;
             // 
-            // Category
+            // connectionResultDataGridView
             // 
-            this.Category.HeaderText = "Category";
-            this.Category.MinimumWidth = 6;
-            this.Category.Name = "Category";
-            this.Category.ReadOnly = true;
-            this.Category.Width = 125;
+            this.connectionResultDataGridView.AllowUserToAddRows = false;
+            this.connectionResultDataGridView.AllowUserToDeleteRows = false;
+            this.connectionResultDataGridView.AllowUserToResizeRows = false;
+            this.connectionResultDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.connectionResultDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.connectionResultDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.connectionResultDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Abfahrt,
+            this.Ankunft,
+            this.Dauer});
+            this.connectionResultDataGridView.Location = new System.Drawing.Point(848, 248);
+            this.connectionResultDataGridView.MultiSelect = false;
+            this.connectionResultDataGridView.Name = "connectionResultDataGridView";
+            this.connectionResultDataGridView.ReadOnly = true;
+            this.connectionResultDataGridView.RowHeadersWidth = 51;
+            this.connectionResultDataGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.connectionResultDataGridView.RowTemplate.Height = 29;
+            this.connectionResultDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.connectionResultDataGridView.Size = new System.Drawing.Size(467, 373);
+            this.connectionResultDataGridView.TabIndex = 9;
             // 
-            // Von
+            // Abfahrt
             // 
-            this.Von.HeaderText = "Von";
-            this.Von.MinimumWidth = 6;
-            this.Von.Name = "Von";
-            this.Von.ReadOnly = true;
-            this.Von.Width = 125;
+            this.Abfahrt.HeaderText = "Abfahrt";
+            this.Abfahrt.MinimumWidth = 6;
+            this.Abfahrt.Name = "Abfahrt";
+            this.Abfahrt.ReadOnly = true;
+            this.Abfahrt.Width = 88;
+            // 
+            // Ankunft
+            // 
+            this.Ankunft.HeaderText = "Ankunft";
+            this.Ankunft.MinimumWidth = 6;
+            this.Ankunft.Name = "Ankunft";
+            this.Ankunft.ReadOnly = true;
+            this.Ankunft.Width = 89;
+            // 
+            // Dauer
+            // 
+            this.Dauer.HeaderText = "Dauer";
+            this.Dauer.MinimumWidth = 6;
+            this.Dauer.Name = "Dauer";
+            this.Dauer.ReadOnly = true;
+            this.Dauer.Width = 78;
+            // 
+            // fromComboBox
+            // 
+            this.fromComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.fromComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
+            this.fromComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.Simple;
+            this.fromComboBox.FormattingEnabled = true;
+            this.fromComboBox.Location = new System.Drawing.Point(848, 87);
+            this.fromComboBox.Name = "fromComboBox";
+            this.fromComboBox.Size = new System.Drawing.Size(467, 28);
+            this.fromComboBox.TabIndex = 5;
+            this.fromComboBox.TextUpdate += new System.EventHandler(this.fromComboBox_TextUpdate);
+            // 
+            // toComboBox
+            // 
+            this.toComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.toComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
+            this.toComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.Simple;
+            this.toComboBox.FormattingEnabled = true;
+            this.toComboBox.Location = new System.Drawing.Point(848, 149);
+            this.toComboBox.Name = "toComboBox";
+            this.toComboBox.Size = new System.Drawing.Size(467, 28);
+            this.toComboBox.TabIndex = 6;
+            this.toComboBox.TextUpdate += new System.EventHandler(this.toComboBox_TextUpdate);
+            // 
+            // connectionDatePicker
+            // 
+            this.connectionDatePicker.Location = new System.Drawing.Point(848, 215);
+            this.connectionDatePicker.MaxDate = new System.DateTime(2999, 12, 31, 0, 0, 0, 0);
+            this.connectionDatePicker.MinDate = new System.DateTime(2020, 1, 1, 0, 0, 0, 0);
+            this.connectionDatePicker.Name = "connectionDatePicker";
+            this.connectionDatePicker.Size = new System.Drawing.Size(367, 27);
+            this.connectionDatePicker.TabIndex = 7;
+            // 
+            // connectionDatePickerLabel
+            // 
+            this.connectionDatePickerLabel.AutoSize = true;
+            this.connectionDatePickerLabel.Location = new System.Drawing.Point(848, 192);
+            this.connectionDatePickerLabel.Name = "connectionDatePickerLabel";
+            this.connectionDatePickerLabel.Size = new System.Drawing.Size(87, 20);
+            this.connectionDatePickerLabel.TabIndex = 15;
+            this.connectionDatePickerLabel.Text = "Reisedatum";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1251, 527);
+            this.ClientSize = new System.Drawing.Size(1329, 633);
+            this.Controls.Add(this.connectionDatePickerLabel);
+            this.Controls.Add(this.connectionDatePicker);
+            this.Controls.Add(this.toComboBox);
+            this.Controls.Add(this.fromComboBox);
+            this.Controls.Add(this.connectionResultDataGridView);
             this.Controls.Add(this.timetableDataGridView);
             this.Controls.Add(this.stationsDataGridView);
             this.Controls.Add(this.label1);
@@ -277,17 +338,15 @@
             this.Controls.Add(this.stationTextBox);
             this.Controls.Add(this.stationLabel);
             this.Controls.Add(this.stationTitleLabel);
-            this.Controls.Add(this.connectionResultListBox);
             this.Controls.Add(this.searchButton);
-            this.Controls.Add(this.toTextBox);
             this.Controls.Add(this.toLabel);
-            this.Controls.Add(this.fromTextBox);
             this.Controls.Add(this.fromLabel);
             this.Controls.Add(this.connectionTitleLabel);
             this.Name = "MainForm";
             this.Text = "Trip Planner";
             ((System.ComponentModel.ISupportInitialize)(this.stationsDataGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.timetableDataGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.connectionResultDataGridView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -297,11 +356,8 @@
 
         private Label connectionTitleLabel;
         private Label fromLabel;
-        private TextBox fromTextBox;
-        private TextBox toTextBox;
         private Label toLabel;
         private Button searchButton;
-        private ListBox connectionResultListBox;
         private Button stationSearchButton;
         private TextBox stationTextBox;
         private Label stationLabel;
@@ -311,10 +367,16 @@
         private DataGridViewTextBoxColumn Id;
         private DataGridViewTextBoxColumn Station;
         private DataGridView timetableDataGridView;
-        private DataGridViewTextBoxColumn Operator;
+        private DataGridView connectionResultDataGridView;
+        private DataGridViewTextBoxColumn Abfahrt;
+        private DataGridViewTextBoxColumn Ankunft;
+        private DataGridViewTextBoxColumn Dauer;
+        private ComboBox fromComboBox;
+        private ComboBox toComboBox;
+        private DataGridViewTextBoxColumn Departure;
         private DataGridViewTextBoxColumn Richtung;
-        private DataGridViewTextBoxColumn Number;
-        private DataGridViewTextBoxColumn Category;
-        private DataGridViewTextBoxColumn Von;
+        private DataGridViewTextBoxColumn Nummer;
+        private DateTimePicker connectionDatePicker;
+        private Label connectionDatePickerLabel;
     }
 }
