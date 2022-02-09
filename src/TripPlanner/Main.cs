@@ -35,7 +35,7 @@ namespace TripPlanner {
                     }
                 } catch (Exception ex) {
                     // Show error
-                    MessageBox.Show(ex.Message);
+                    MessageBox.Show($"Ein Fehler ist aufgetreten: {ex.Message}. Überprüfen Sie die Internetverbindung oder kontaktieren Sie den Support.");
                 }
             } else {
                 // Empty search field
@@ -61,15 +61,20 @@ namespace TripPlanner {
                 string id = row.Cells["Id"].Value.ToString();
                 string name = row.Cells["Station"].Value.ToString();
 
-                StationBoardRoot stationBoards = _transport.GetStationBoard(name, id);
+                try {
+                    StationBoardRoot stationBoards = _transport.GetStationBoard(name, id);
 
-                if (stationBoards.Entries.Count > 0) {
-                    // Display in listbox
-                    foreach (StationBoard stationBoard in stationBoards.Entries)
-                        timetableDataGridView.Rows.Add(stationBoard.Stop.Departure, stationBoard.To, stationBoard.Number);
-                } else {
-                    // No results
-                    MessageBox.Show("Für diese Verbindung wurde keine Abfahrtstafel gefunden.");
+                    if (stationBoards.Entries.Count > 0) {
+                        // Display in listbox
+                        foreach (StationBoard stationBoard in stationBoards.Entries)
+                            timetableDataGridView.Rows.Add(stationBoard.Stop.Departure, stationBoard.To, stationBoard.Number);
+                    } else {
+                        // No results
+                        MessageBox.Show("Für diese Verbindung wurde keine Abfahrtstafel gefunden.");
+                    }
+                } catch (Exception ex) {
+                    // Show error
+                    MessageBox.Show($"Ein Fehler ist aufgetreten: {ex.Message}. Überprüfen Sie die Internetverbindung oder kontaktieren Sie den Support.");
                 }
             } else {
                 // No station selected
@@ -87,20 +92,29 @@ namespace TripPlanner {
                 // Clear contents
                 connectionResultDataGridView.Rows.Clear();
 
-                // Get connections
-                Connections connections =
-                    _transport.GetConnections(fromComboBox.Text, toComboBox.Text, connectionDatePicker.Value);
+                try {
+                    // Get connections
+                    Connections connections =
+                        _transport.GetConnections(fromComboBox.Text, toComboBox.Text, connectionDatePicker.Value);
 
-                // Add connections to dataGridView
-                foreach (Connection connection in connections.ConnectionList) {
-                    string fromPlatform = string.IsNullOrEmpty(connection.From.Platform) ? "" : $" - Gleis {connection.From.Platform}";
-                    string toPlatform = string.IsNullOrEmpty(connection.To.Platform) ? "" : $" - Gleis {connection.To.Platform}";
-                    connectionResultDataGridView.Rows.Add(
-                        connection.From.Station.Name,
-                        $"{connection.From.Departure}{fromPlatform}",
-                        connection.To.Station.Name,
-                        $"{connection.To.Arrival}{toPlatform}",
-                        connection.Duration);
+                    // Add connections to dataGridView
+                    foreach (Connection connection in connections.ConnectionList) {
+                        string fromPlatform = string.IsNullOrEmpty(connection.From.Platform)
+                            ? ""
+                            : $" - Gleis {connection.From.Platform}";
+                        string toPlatform = string.IsNullOrEmpty(connection.To.Platform)
+                            ? ""
+                            : $" - Gleis {connection.To.Platform}";
+                        connectionResultDataGridView.Rows.Add(
+                            connection.From.Station.Name,
+                            $"{connection.From.Departure}{fromPlatform}",
+                            connection.To.Station.Name,
+                            $"{connection.To.Arrival}{toPlatform}",
+                            connection.Duration);
+                    }
+                } catch (Exception ex) {
+                    // Show error
+                    MessageBox.Show($"Ein Fehler ist aufgetreten: {ex.Message}. Überprüfen Sie die Internetverbindung oder kontaktieren Sie den Support.");
                 }
             }
             else {
@@ -120,14 +134,19 @@ namespace TripPlanner {
 
             // If search string not empty
             if (fromComboBox.Text.Length > 3) {
-                // Get stations
-                string[] stations = _transport.GetStationsAutoComplete(fromComboBox.Text, 4)
-                    .StationList
-                    .Where(station => station.Id != null)
-                    .Select(x => x.Name).Take(5).ToArray();
+                try {
+                    // Get stations
+                    string[] stations = _transport.GetStationsAutoComplete(fromComboBox.Text, 4)
+                        .StationList
+                        .Where(station => station.Id != null)
+                        .Select(x => x.Name).Take(5).ToArray();
 
-                // Add new suggestions, if there are any
-                _fromAutoCompleteSource.AddRange(stations);
+                    // Add new suggestions, if there are any
+                    _fromAutoCompleteSource.AddRange(stations);
+                } catch (Exception ex) {
+                    // Show error
+                    MessageBox.Show($"Ein Fehler ist aufgetreten: {ex.Message}. Überprüfen Sie die Internetverbindung oder kontaktieren Sie den Support.");
+                }
             }
         }
 
@@ -142,14 +161,19 @@ namespace TripPlanner {
 
             // If search string not empty
             if (toComboBox.Text.Length > 3) {
-                // Get stations
-                string[] stations = _transport.GetStationsAutoComplete(toComboBox.Text, 4)
-                    .StationList
-                    .Where(station => station.Id != null)
-                    .Select(x => x.Name).Take(5).ToArray();
+                try {
+                    // Get stations
+                    string[] stations = _transport.GetStationsAutoComplete(toComboBox.Text, 4)
+                        .StationList
+                        .Where(station => station.Id != null)
+                        .Select(x => x.Name).Take(5).ToArray();
 
-                // Add new suggestions, if there are any
-                _toAutoCompleteSource.AddRange(stations);
+                    // Add new suggestions, if there are any
+                    _toAutoCompleteSource.AddRange(stations);
+                } catch (Exception ex) {
+                    // Show error
+                    MessageBox.Show($"Ein Fehler ist aufgetreten: {ex.Message}. Überprüfen Sie die Internetverbindung oder kontaktieren Sie den Support.");
+                }
             }
         }
 
