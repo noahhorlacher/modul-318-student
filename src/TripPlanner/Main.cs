@@ -1,15 +1,14 @@
 using System.Diagnostics;
-using System.Windows.Forms;
 using SwissTransport.Core;
 using SwissTransport.Models;
 
 namespace TripPlanner {
-    public partial class MainForm : Form {
+    public partial class Main : Form {
         private ITransport _transport = new Transport();
         private AutoCompleteStringCollection _fromAutoCompleteSource = new();
         private AutoCompleteStringCollection _toAutoCompleteSource = new();
 
-        public MainForm() {
+        public Main() {
             InitializeComponent();
             fromComboBox.AutoCompleteCustomSource = _fromAutoCompleteSource;
             toComboBox.AutoCompleteCustomSource = _toAutoCompleteSource;
@@ -34,15 +33,47 @@ namespace TripPlanner {
                     foreach (Station station in result.StationList.Where(station => station.Id != null)) {
                         stationsDataGridView.Rows.Add(station.Id, station.Name);
                     }
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     // Show error
                     MessageBox.Show(ex.Message);
                 }
-            }
-            else {
+            } else {
                 // Empty search field
                 MessageBox.Show("Bitte geben Sie eine Station ein.");
+            }
+        }
+
+        /// <summary>
+        /// Displays timetable of stationsDataGridView selection
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void stationsDataGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e) {
+            // Load timetable for currently selected station
+            if (stationsDataGridView.SelectedCells.Count > 0) {
+                // Clear timetable
+                timetableDataGridView.Rows.Clear();
+
+                // Get timetable
+                int rowIndex = stationsDataGridView.SelectedCells[0].RowIndex;
+                DataGridViewRow row = stationsDataGridView.Rows[rowIndex];
+
+                string id = row.Cells["Id"].Value.ToString();
+                string name = row.Cells["Station"].Value.ToString();
+
+                StationBoardRoot stationBoards = _transport.GetStationBoard(name, id);
+
+                if (stationBoards.Entries.Count > 0) {
+                    // Display in listbox
+                    foreach (StationBoard stationBoard in stationBoards.Entries)
+                        timetableDataGridView.Rows.Add(stationBoard.Stop.Departure, stationBoard.To, stationBoard.Number);
+                } else {
+                    // No results
+                    MessageBox.Show("Für diese Verbindung wurde keine Abfahrtstafel gefunden.");
+                }
+            } else {
+                // No station selected
+                MessageBox.Show("Bitte wählen Sie eine Station aus der Stationssuche.");
             }
         }
 
@@ -62,11 +93,13 @@ namespace TripPlanner {
 
                 // Add connections to dataGridView
                 foreach (Connection connection in connections.ConnectionList) {
-                    string fromPlatform = string.IsNullOrEmpty(connection.From.Platform) ? "" : $"Gleis {connection.From.Platform} ";
-                    string toPlatform = string.IsNullOrEmpty(connection.To.Platform) ? "" : $"Gleis {connection.To.Platform} ";
+                    string fromPlatform = string.IsNullOrEmpty(connection.From.Platform) ? "" : $" - Gleis {connection.From.Platform}";
+                    string toPlatform = string.IsNullOrEmpty(connection.To.Platform) ? "" : $" - Gleis {connection.To.Platform}";
                     connectionResultDataGridView.Rows.Add(
-                        $"{connection.From.Departure} - {fromPlatform}{connection.From.Station.Name}",
-                        $"{connection.To.Arrival} - {toPlatform}{connection.To.Station.Name}",
+                        connection.From.Station.Name,
+                        $"{connection.From.Departure}{fromPlatform}",
+                        connection.To.Station.Name,
+                        $"{connection.To.Arrival}{toPlatform}",
                         connection.Duration);
                 }
             }
@@ -75,36 +108,6 @@ namespace TripPlanner {
             }
         }
 
-        /// <summary>
-        /// Displays timetable of stationsDataGridView selection
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void stationsDataGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e) {
-            // Load timetable for currently selected station
-            if (stationsDataGridView.SelectedCells.Count > 0) {
-                // Clear timetable
-                timetableDataGridView.Rows.Clear();
-
-                // Get timetable
-                int rowIndex = stationsDataGridView.SelectedCells[0].RowIndex;
-                DataGridViewRow row = stationsDataGridView.Rows[rowIndex];
-
-                String id = row.Cells["Id"].Value.ToString();
-                String name = row.Cells["Station"].Value.ToString();
-
-                StationBoardRoot stationBoards = _transport.GetStationBoard(name, id);
-
-                // Display in listbox
-                foreach (StationBoard stationBoard in stationBoards.Entries) {
-                    timetableDataGridView.Rows.Add(stationBoard.Stop.Departure, stationBoard.To, stationBoard.Number);
-                }
-            }
-            else {
-                // No station selected
-                MessageBox.Show("Bitte wählen Sie eine Station aus der Stationssuche.");
-            }
-        }
 
         /// <summary>
         /// Update from-connection combobox suggestions
@@ -147,6 +150,46 @@ namespace TripPlanner {
 
                 // Add new suggestions, if there are any
                 _toAutoCompleteSource.AddRange(stations);
+            }
+        }
+
+        /// <summary>
+        /// Open default mail app
+        /// </summary>
+        /// <param name="recipient">Email adress of recipient</param>
+        /// <param name="subject">Email subject</param>
+        /// <param name="body">Email message/content</param>
+        private void openMail(string recipient="", string subject = "", string body = "") {
+            string finalString = $"mailto:{recipient}?";
+            if (!string.IsNullOrEmpty(subject)) finalString += $"subject={Uri.EscapeDataString(subject)}";
+            if (!string.IsNullOrEmpty(body)) finalString += $"{(string.IsNullOrEmpty(subject) ? "" : "&")}body={Uri.EscapeDataString(body)}";
+            Process.Start("cmd",$"/c start \"\" \"{finalString} \"");
+        }
+
+        /// <summary>
+        /// Sends email of the connection
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void emailButton_Click(object sender, EventArgs e) {
+            if (connectionResultDataGridView.SelectedRows.Count == 1) {
+                int rowIndex = connectionResultDataGridView.SelectedCells[0].RowIndex;
+                DataGridViewRow row = connectionResultDataGridView.Rows[rowIndex];
+
+                string from = row.Cells["fromStation"].Value.ToString();
+                string departure = row.Cells["connectionDeparture"].Value.ToString();
+                string to = row.Cells["toStation"].Value.ToString();
+                string arrival = row.Cells["connectionArrival"].Value.ToString();
+                string duration = row.Cells["duration"].Value.ToString();
+
+                openMail(
+                    "empfaenger@email.com",
+                    $"Verbindung {from} - {to}",
+                    $"Startstation: {from}\nAbfahrt: {departure}\nZielstation: {to}\nAnkunft: {arrival}\nDauer: {duration}"
+                        );
+            } else {
+                // No connection selected
+                MessageBox.Show("Bitte wählen Sie eine Verbindung aus.");
             }
         }
     }
